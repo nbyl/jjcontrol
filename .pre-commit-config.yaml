@@ -5,11 +5,10 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
-  - repo: https://github.com/frnmst/md-toc
-    rev: 8.1.3
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.50.1
     hooks:
-      - id: md-toc
-        exclude: '^docs/themes'
+      - id: golangci-lint
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
