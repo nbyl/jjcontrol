@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  backend:
+    image: golang:1.19-bullseye
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    env_file:
+      - .env
+    command:
+      - /workspace/scripts/run-backend.sh
+    ports:
+      - "8080:8080"
