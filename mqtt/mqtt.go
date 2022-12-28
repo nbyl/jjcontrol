@@ -4,17 +4,32 @@ import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/labstack/echo/v4"
+	"gitlab.com/nbyl/jjcontrol/store"
 	"os"
 )
 
-func InitMqtt(logger echo.Logger) { //nolint:typecheck
+var localState *store.Store
+var localLogger echo.Logger //nolint:typecheck
+
+var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
+	subscribeToLightTopic(client)
+	localLogger.Info("Connected")
+}
+
+var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
+	localLogger.Info("Connect lost: ", err)
+}
+
+func InitMqtt(logger echo.Logger, state *store.Store) { //nolint:typecheck
+	localLogger = logger
+	localState = state
+
 	var brokerUrl = os.Getenv("MQTT_URL")
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(brokerUrl)
 	opts.SetClientID(os.Getenv("MQTT_CLIENT_ID"))
 	opts.SetUsername(os.Getenv("MQTT_USERNAME"))
 	opts.SetPassword(os.Getenv("MQTT_PASSWORD"))
-	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 
