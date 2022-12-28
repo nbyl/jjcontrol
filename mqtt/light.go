@@ -10,7 +10,6 @@ import (
 func subscribeToLightTopic(client mqtt.Client) {
 	lightId := os.Getenv("TASMOTA_LIGHT_ID")
 
-	var commandTopic = fmt.Sprintf("cmnd/%s/POWER", lightId)
 	var statTopic = fmt.Sprintf("stat/%s/POWER", lightId)
 
 	client.Subscribe(statTopic, 0, func(client mqtt.Client, message mqtt.Message) {
@@ -23,5 +22,19 @@ func subscribeToLightTopic(client mqtt.Client) {
 		}
 	})
 
-	client.Publish(commandTopic, 0, false, "")
+	client.Publish(getCommandTopic(), 0, false, "")
+}
+
+func getCommandTopic() string {
+	lightId := os.Getenv("TASMOTA_LIGHT_ID")
+	return fmt.Sprintf("cmnd/%s/POWER", lightId)
+}
+
+func SendLightCommand(state store.PowerState) {
+	payload := "OFF"
+	if state == store.ON {
+		payload = "ON"
+	}
+
+	client.Publish(getCommandTopic(), 1, false, payload)
 }

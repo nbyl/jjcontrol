@@ -10,6 +10,7 @@ import (
 
 var localState *store.Store
 var localLogger echo.Logger //nolint:typecheck
+var client mqtt.Client
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
 	subscribeToLightTopic(client)
@@ -33,7 +34,7 @@ func InitMqtt(logger echo.Logger, state *store.Store) { //nolint:typecheck
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 
-	client := mqtt.NewClient(opts)
+	client = mqtt.NewClient(opts)
 	logger.Info(fmt.Printf("Connecting to %s", brokerUrl))
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
