@@ -1,10 +1,11 @@
-import {useEffect,useState} from 'react'
+import {useState} from 'react'
 import './App.css'
+import {useInterval} from "./hooks/useInterval";
 
 function App() {
     const [data, setData] = useState("");
 
-    useEffect(() => {
+    useInterval(async () => {
         const fetchData = async () => {
             const response = await fetch("/api/room");
             const data = await response.text();
@@ -12,8 +13,7 @@ function App() {
         };
 
         fetchData().catch((err) => console.log(err));
-    }, []);
-
+    }, 3000);
 
     return (
         <div className="App">
