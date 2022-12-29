@@ -12,3 +12,12 @@ services:
       - /workspace/scripts/run-backend.sh
     ports:
       - "8080:8080"
+  frontend:
+    image: node:18
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace/web
+    command:
+      - /workspace/scripts/run-frontend.sh
+    ports:
+      - "5173:5173"
