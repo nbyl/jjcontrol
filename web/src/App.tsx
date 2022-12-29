@@ -10,28 +10,47 @@ function App() {
     const [lightOn, setLightOn] = useState(false);
 
     useInterval(async () => {
-        const fetchData = async () => {
+        await updateRoomState()
+    }, 3000);
+
+    async function updateRoomState() {
+        try {
             const response = await fetch("/api/room");
             const data = JSON.parse(await response.text());
 
             setRoomName(data.name)
             setLightOn(data.lightOn);
-        };
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
-        fetchData().catch((err) => console.log(err));
-    }, 3000);
+    async function switchLight(event: React.MouseEvent<HTMLDivElement>, on: boolean) {
+        try {
+            await fetch("/api/room", {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    'lightOn': on,
+                })
+            });
+            setLightOn(on)
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     return (
         <div className="App">
             <h1>{roomName}</h1>
 
             {lightOn && (
-                <div style={{color: 'yellow'}}>
+                <div style={{color: 'yellow', cursor: 'pointer'}} onClick={(e) => switchLight(e, false)}>
                     <Icon size={256} icon={ic_lightbulb}/>
                 </div>
             )}
             {!lightOn && (
-                <div>
+                <div style={{cursor: 'pointer'}} onClick={(e) => switchLight(e, true)}>
                     <Icon size={256} icon={ic_lightbulb_outline_twotone}/>
                 </div>
             )}
