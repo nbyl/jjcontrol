@@ -6,12 +6,14 @@ import (
 	"gitlab.com/nbyl/jjcontrol/store"
 	"gitlab.com/nbyl/jjcontrol/web"
 	"net/http"
+	"os"
 )
 
 var localState *store.Store
 
 type Room struct {
-	LightOn bool `json:"lightOn"`
+	Name    string `json:"name"`
+	LightOn bool   `json:"lightOn"`
 }
 
 func InitRestApi(e *echo.Echo, state *store.Store) { //nolint:typecheck
@@ -20,6 +22,7 @@ func InitRestApi(e *echo.Echo, state *store.Store) { //nolint:typecheck
 	//nolint:typecheck
 	e.GET("/api/room", func(c echo.Context) error {
 		room := Room{
+			Name:    os.Getenv("ROOM_NAME"),
 			LightOn: localState.LightState == store.ON,
 		}
 

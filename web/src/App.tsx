@@ -6,7 +6,7 @@ import {ic_lightbulb} from 'react-icons-kit/md/ic_lightbulb'
 import {ic_lightbulb_outline_twotone} from 'react-icons-kit/md/ic_lightbulb_outline_twotone'
 
 function App() {
-    //const [data, setData] = useState({});
+    const [roomName, setRoomName] = useState("");
     const [lightOn, setLightOn] = useState(false);
 
     useInterval(async () => {
@@ -14,8 +14,7 @@ function App() {
             const response = await fetch("/api/room");
             const data = JSON.parse(await response.text());
 
-            console.log(data)
-            //setData(data);
+            setRoomName(data.name)
             setLightOn(data.lightOn);
         };
 
@@ -24,7 +23,7 @@ function App() {
 
     return (
         <div className="App">
-
+            <h1>{roomName}</h1>
 
             {lightOn && (
                 <div style={{color: 'yellow'}}>
