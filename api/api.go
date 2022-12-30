@@ -19,8 +19,8 @@ type Room struct {
 func InitRestApi(e *echo.Echo, state *store.Store) { //nolint:typecheck
 	localState = state
 	web.RegisterHandlers(e)
-	//nolint:typecheck
-	e.GET("/api/room", func(c echo.Context) error {
+
+	e.GET("/api/room", func(c echo.Context) error { //nolint:typecheck
 		room := Room{
 			Name:    os.Getenv("ROOM_NAME"),
 			LightOn: localState.LightState == store.ON,
