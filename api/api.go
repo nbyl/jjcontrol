@@ -16,6 +16,9 @@ type Room struct {
 	LightOn bool   `json:"lightOn"`
 }
 
+type RoomController struct {
+}
+
 func InitRestApi(e *echo.Echo, state *store.Store) { //nolint:typecheck
 	localState = state
 	web.RegisterHandlers(e)

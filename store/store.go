@@ -8,8 +8,8 @@ type PowerState int
 
 const (
 	ON      PowerState = 1
-	OFF                = 2
-	UNKNOWN            = 3
+	OFF     PowerState = 2
+	UNKNOWN PowerState = 3
 )
 
 type Store struct {
