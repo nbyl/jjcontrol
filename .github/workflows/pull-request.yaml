@@ -12,7 +12,7 @@ jobs:
     - uses: docker/build-push-action@v3
       with:
         push: false
-        platforms: linux/armv/v7,linux/arm64,linux/amd64
+        platforms: linux/arm/v7,linux/arm64/v8,linux/amd64
   test:
     runs-on: ubuntu-latest
     steps:
