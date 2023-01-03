@@ -1,4 +1,4 @@
-module gitlab.com/nbyl/jjcontrol
+module github.com/nbyl/jjcontrol
 
 go 1.19
 
