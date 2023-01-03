@@ -1,9 +1,9 @@
-name: run all tests
+name: Validate
 on:
   pull_request:
     branches: [ main ]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -12,10 +12,9 @@ jobs:
         node-version: 18
     - run: (cd web && yarn)
     - run: (cd web && yarn test)
+    - run: (cd web && yarn build)
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '^1.19.4'
+    - run: go test
 # TODO: run linter & pre-commit
-#      - name: run linter
-#        run: make lint
-#      - name: run tests
-#        run: make test
-#      - name: determine potential release version
-#        run: make print-release
