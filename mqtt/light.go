@@ -3,7 +3,7 @@ package mqtt
 import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"gitlab.com/nbyl/jjcontrol/store"
+	"github.com/nbyl/jjcontrol/store"
 	"os"
 )
 
