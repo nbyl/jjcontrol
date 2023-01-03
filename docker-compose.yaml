@@ -16,7 +16,7 @@ services:
     image: node:18
     volumes:
       - ./:/workspace
-    working_dir: /workspace/web
+    working_dir: /workspace/frontend
     command:
       - /workspace/scripts/run-frontend.sh
     ports:

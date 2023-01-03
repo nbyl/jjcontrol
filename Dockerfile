@@ -1,6 +1,6 @@
 FROM node:18 as frontend-build
 WORKDIR /usr/src/app
-COPY web/package.json web/yarn.lock ./
+COPY frontend/package.json web/yarn.lock ./
 RUN yarn
 COPY web/ ./
 RUN yarn build

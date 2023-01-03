@@ -4,7 +4,7 @@ import (
 	"fmt"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/labstack/echo/v4"
-	"github.com/nbyl/jjcontrol/store"
+	"github.com/nbyl/jjcontrol/backend/store"
 	"os"
 )
 
