@@ -1,11 +1,8 @@
 import { describe, it, expect } from 'vitest';
+import {sayHello} from "./App";
 
 describe('something truthy and falsy', () => {
-    it('true to be true', () => {
-        expect(true).toBe(true);
-    });
-
-    it('false to be false', () => {
-        expect(false).toBe(false);
+    it('to say hello', () => {
+        expect(sayHello()).toBe('Hello, World!');
     });
 });

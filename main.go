@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"gitlab.com/nbyl/jjcontrol/api"
-	"gitlab.com/nbyl/jjcontrol/mqtt"
-	"gitlab.com/nbyl/jjcontrol/store"
+	"github.com/nbyl/jjcontrol/api"
+	"github.com/nbyl/jjcontrol/mqtt"
+	"github.com/nbyl/jjcontrol/store"
 )
 
 func main() {
