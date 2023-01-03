@@ -21,6 +21,8 @@ jobs:
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CodeClimateReporterID }}
       with:
-        coverageLocations: ${{github.workspace}}/cover.out:gocov
+        coverageLocations: |
+          ${{github.workspace}}/cover.out:gocov
+          ${{github.workspace}}/web/coverage/clover.xml:clover
         prefix: github.com/nbyl/jjcontrol
 # TODO: run linter & pre-commit
