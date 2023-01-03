@@ -5,6 +5,10 @@ import {Icon} from 'react-icons-kit'
 import {ic_lightbulb} from 'react-icons-kit/md/ic_lightbulb'
 import {ic_lightbulb_outline_twotone} from 'react-icons-kit/md/ic_lightbulb_outline_twotone'
 
+export function sayHello(): string {
+    return "Hello, World!"
+}
+
 function App() {
     const [roomName, setRoomName] = useState("");
     const [lightOn, setLightOn] = useState(false);
