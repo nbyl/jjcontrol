@@ -2,14 +2,12 @@ package api
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/nbyl/jjcontrol/backend/mqtt"
-	"github.com/nbyl/jjcontrol/backend/store"
+	"github.com/nbyl/jjcontrol/backend/smarthome"
 	"github.com/nbyl/jjcontrol/frontend"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"os"
 )
-
-var localState *store.Store
 
 type Room struct {
 	Name    string `json:"name"`
@@ -17,34 +15,43 @@ type Room struct {
 }
 
 type RoomController struct {
+	roomService *smarthome.RoomService
 }
 
-func InitRestApi(e *echo.Echo, state *store.Store) { //nolint:typecheck
-	localState = state
+func (r RoomController) GetState(c echo.Context) error {
+	log.Info().Msgf("api:%p", r.roomService)
+	room := Room{
+		Name:    os.Getenv("ROOM_NAME"),
+		LightOn: r.roomService.LightState == smarthome.ON,
+	}
+
+	return c.JSON(http.StatusOK, room)
+}
+
+func (r RoomController) UpdateState(c echo.Context) error {
+	var room Room
+	if err := c.Bind(&room); err != nil {
+		log.Err(err)
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+
+	//var lightState smarthome.PowerState = smarthome.OFF
+	//if room.LightOn {
+	//	lightState = smarthome.ON
+	//}
+	//localState.SendLightCommand(lightState)
+
+	return c.String(http.StatusNoContent, "")
+}
+
+func NewRoomController(e *echo.Echo, roomService *smarthome.RoomService) {
 	web.RegisterHandlers(e)
 
-	e.GET("/api/room", func(c echo.Context) error { //nolint:typecheck
-		room := Room{
-			Name:    os.Getenv("ROOM_NAME"),
-			LightOn: localState.LightState == store.ON,
-		}
+	controller := RoomController{
+		roomService: roomService,
+	}
 
-		return c.JSON(http.StatusOK, room)
-	})
-	e.PUT("/api/room", func(c echo.Context) error { // nolint:typecheck
-		var room Room
-		if err := c.Bind(&room); err != nil {
-			e.Logger.Error(err)
-			return c.String(http.StatusBadRequest, "bad request")
-		}
-
-		var lightState store.PowerState = store.OFF
-		if room.LightOn {
-			lightState = store.ON
-		}
-		mqtt.SendLightCommand(lightState)
-
-		return c.String(http.StatusNoContent, "")
-	})
+	e.GET("/api/room", controller.GetState)
+	e.PUT("/api/room", controller.UpdateState)
 	e.Logger.Fatal(e.Start(":8080"))
 }

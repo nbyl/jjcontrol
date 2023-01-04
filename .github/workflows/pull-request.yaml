@@ -10,9 +10,9 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-    - run: (cd web && yarn)
-    - run: (cd web && yarn test)
-    - run: (cd web && yarn build)
+    - run: (cd frontend && yarn)
+    - run: (cd frontend && yarn test)
+    - run: (cd frontend && yarn build)
     - uses: actions/setup-go@v3
       with:
         go-version: '^1.19.4'
@@ -25,4 +25,3 @@ jobs:
           ${{github.workspace}}/cover.out:gocov
           ${{github.workspace}}/web/coverage/clover.xml:clover
         prefix: github.com/nbyl/jjcontrol
-# TODO: run linter & pre-commit
