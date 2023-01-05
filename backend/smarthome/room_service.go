@@ -1,29 +1,29 @@
 package smarthome
 
 import (
-	"encoding/json"
 	"github.com/rs/zerolog/log"
 )
 
-type RoomService struct {
+type RoomService interface {
+	GetLightState() PowerState
+	UpdateLightState(state PowerState)
+}
+
+type RoomServiceImplementation struct {
 	client     *SmarthomeClient
 	LightState PowerState
 }
 
-func (s *RoomService) UpdateLightState(state PowerState) {
+func (s *RoomServiceImplementation) GetLightState() PowerState {
+	return s.LightState
+}
+
+func (s *RoomServiceImplementation) UpdateLightState(state PowerState) {
 	s.LightState = state
 }
 
-func (s *RoomService) ToJson() (string, error) {
-	value, err := json.Marshal(s)
-	if err != nil {
-		return "", err
-	}
-	return string(value), nil
-}
-
-func NewRoomService(client *SmarthomeClient) *RoomService {
-	service := RoomService{
+func NewRoomService(client *SmarthomeClient) RoomService {
+	service := RoomServiceImplementation{
 		client:     client,
 		LightState: UNKNOWN,
 	}

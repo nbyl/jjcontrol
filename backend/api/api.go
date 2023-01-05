@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/nbyl/jjcontrol/backend/smarthome"
-	"github.com/nbyl/jjcontrol/frontend"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"os"
@@ -15,14 +14,14 @@ type Room struct {
 }
 
 type RoomController struct {
-	roomService *smarthome.RoomService
+	roomService smarthome.RoomService
 }
 
 func (r RoomController) GetState(c echo.Context) error {
 	log.Info().Msgf("api:%p", r.roomService)
 	room := Room{
 		Name:    os.Getenv("ROOM_NAME"),
-		LightOn: r.roomService.LightState == smarthome.ON,
+		LightOn: r.roomService.GetLightState() == smarthome.ON,
 	}
 
 	return c.JSON(http.StatusOK, room)
@@ -44,14 +43,13 @@ func (r RoomController) UpdateState(c echo.Context) error {
 	return c.String(http.StatusNoContent, "")
 }
 
-func NewRoomController(e *echo.Echo, roomService *smarthome.RoomService) {
-	web.RegisterHandlers(e)
-
+func NewRoomController(e *echo.Echo, roomService smarthome.RoomService) *RoomController {
 	controller := RoomController{
 		roomService: roomService,
 	}
 
 	e.GET("/api/room", controller.GetState)
 	e.PUT("/api/room", controller.UpdateState)
-	e.Logger.Fatal(e.Start(":8080"))
+
+	return &controller
 }
