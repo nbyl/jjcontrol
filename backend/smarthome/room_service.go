@@ -6,12 +6,18 @@ import (
 
 type RoomService interface {
 	GetLightState() PowerState
+	SwitchLight(state PowerState) error
 	UpdateLightState(state PowerState)
 }
 
 type RoomServiceImplementation struct {
 	client     *SmarthomeClient
 	LightState PowerState
+}
+
+func (s *RoomServiceImplementation) SwitchLight(state PowerState) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (s *RoomServiceImplementation) GetLightState() PowerState {

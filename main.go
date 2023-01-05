@@ -20,7 +20,7 @@ func main() {
 
 	e := echo.New()
 	e.Logger = lecho.New(os.Stdout)
-	frontend.RegisterHandlers(e)
 	api.NewRoomController(e, roomService)
+	frontend.RegisterHandlers(e)
 	e.Logger.Fatal(e.Start(":8080"))
 }

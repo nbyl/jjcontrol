@@ -18,7 +18,6 @@ type RoomController struct {
 }
 
 func (r RoomController) GetState(c echo.Context) error {
-	log.Info().Msgf("api:%p", r.roomService)
 	room := Room{
 		Name:    os.Getenv("ROOM_NAME"),
 		LightOn: r.roomService.GetLightState() == smarthome.ON,
@@ -34,11 +33,14 @@ func (r RoomController) UpdateState(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	//var lightState smarthome.PowerState = smarthome.OFF
-	//if room.LightOn {
-	//	lightState = smarthome.ON
-	//}
-	//localState.SendLightCommand(lightState)
+	var lightState smarthome.PowerState = smarthome.OFF
+	if room.LightOn {
+		lightState = smarthome.ON
+	}
+	err := r.roomService.SwitchLight(lightState)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Could not switch light.")
+	}
 
 	return c.String(http.StatusNoContent, "")
 }
