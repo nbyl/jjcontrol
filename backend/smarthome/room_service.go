@@ -7,13 +7,12 @@ type RoomService interface {
 }
 
 type RoomServiceImplementation struct {
-	client     *SmarthomeClient
+	client     SmarthomeClient
 	LightState PowerState
 }
 
 func (s *RoomServiceImplementation) SwitchLight(state PowerState) error {
-	//TODO implement me
-	panic("implement me")
+	return s.client.SendLightCommand(state)
 }
 
 func (s *RoomServiceImplementation) GetLightState() PowerState {
@@ -24,7 +23,7 @@ func (s *RoomServiceImplementation) UpdateLightState(state PowerState) {
 	s.LightState = state
 }
 
-func NewRoomService(client *SmarthomeClient) RoomService {
+func NewRoomService(client SmarthomeClient) RoomService {
 	service := RoomServiceImplementation{
 		client:     client,
 		LightState: UNKNOWN,

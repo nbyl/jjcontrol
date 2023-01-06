@@ -7,13 +7,18 @@ import (
 	"os"
 )
 
-type SmarthomeClient struct {
-	client    mqtt.Client
-	listeners []SmarthomeListener
+type SmarthomeClient interface {
+	RegisterListener(listener SmarthomeListener)
+	SendLightCommand(state PowerState) error
 }
 
 type SmarthomeListener interface {
 	UpdateLightState(state PowerState)
+}
+
+type DefaultSmarthomeClient struct {
+	client    mqtt.Client
+	listeners []SmarthomeListener
 }
 
 var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -24,7 +29,7 @@ var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err
 	log.Err(err).Msg("Connection lost")
 }
 
-func NewSmarthomeClient() (*SmarthomeClient, error) { //nolint:typecheck
+func NewSmarthomeClient() (SmarthomeClient, error) { //nolint:typecheck
 	var brokerUrl = os.Getenv("MQTT_URL")
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(brokerUrl)
@@ -42,7 +47,7 @@ func NewSmarthomeClient() (*SmarthomeClient, error) { //nolint:typecheck
 		return nil, token.Error()
 	}
 
-	smarthomeClient := &SmarthomeClient{
+	smarthomeClient := &DefaultSmarthomeClient{
 		client:    client,
 		listeners: []SmarthomeListener{},
 	}
@@ -54,24 +59,23 @@ func NewSmarthomeClient() (*SmarthomeClient, error) { //nolint:typecheck
 	return smarthomeClient, nil
 }
 
-func (s *SmarthomeClient) RegisterListener(listener SmarthomeListener) {
+func (s *DefaultSmarthomeClient) RegisterListener(listener SmarthomeListener) {
 	s.listeners = append(s.listeners, listener)
 }
 
-func (s *SmarthomeClient) fireUpdateLightState(state PowerState) {
+func (s *DefaultSmarthomeClient) fireUpdateLightState(state PowerState) {
 	log.Info().Msgf("%d", len(s.listeners))
 	for _, listener := range s.listeners {
-		log.Info().Msgf("fireUpdateLightState:%p", listener)
 		listener.UpdateLightState(state)
 	}
 }
 
-func (s *SmarthomeClient) subscribeToLightTopic(client mqtt.Client) error {
+func (s *DefaultSmarthomeClient) subscribeToLightTopic(client mqtt.Client) error {
 	statTopic := getStatTopic()
 	token := client.Subscribe(statTopic, 0, func(client mqtt.Client, message mqtt.Message) {
 		var value = string(message.Payload())
 
-		log.Info().Msg(value)
+		log.Debug().Msg(value)
 
 		if value == "ON" {
 			s.fireUpdateLightState(ON)
@@ -97,11 +101,16 @@ func getStatTopic() string {
 	return fmt.Sprintf("stat/%s/POWER", lightId)
 }
 
-func (s *SmarthomeClient) SendLightCommand(state PowerState) {
+func (s *DefaultSmarthomeClient) SendLightCommand(state PowerState) error {
 	payload := "OFF"
 	if state == ON {
 		payload = "ON"
 	}
 
-	s.client.Publish(getCommandTopic(), 1, false, payload)
+	token := s.client.Publish(getCommandTopic(), 1, false, payload)
+	if token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+
+	return nil
 }
