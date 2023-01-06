@@ -55,7 +55,6 @@ func NewSmarthomeClient() (*SmarthomeClient, error) { //nolint:typecheck
 }
 
 func (s *SmarthomeClient) RegisterListener(listener SmarthomeListener) {
-	log.Info().Msgf("RegisterListener:%p", listener)
 	s.listeners = append(s.listeners, listener)
 }
 

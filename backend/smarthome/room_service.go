@@ -1,9 +1,5 @@
 package smarthome
 
-import (
-	"github.com/rs/zerolog/log"
-)
-
 type RoomService interface {
 	GetLightState() PowerState
 	SwitchLight(state PowerState) error
@@ -33,7 +29,6 @@ func NewRoomService(client *SmarthomeClient) RoomService {
 		client:     client,
 		LightState: UNKNOWN,
 	}
-	log.Info().Msgf("%p", &service)
 	client.RegisterListener(&service)
 
 	return &service
