@@ -2,15 +2,25 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/nbyl/jjcontrol/api"
-	"github.com/nbyl/jjcontrol/mqtt"
-	"github.com/nbyl/jjcontrol/store"
+	"github.com/nbyl/jjcontrol/backend/api"
+	"github.com/nbyl/jjcontrol/backend/smarthome"
+	"github.com/nbyl/jjcontrol/frontend"
+	"github.com/rs/zerolog/log"
+	"github.com/ziflex/lecho/v3"
+	"os"
 )
 
 func main() {
 	//nolint:typecheck
+	smarthomeClient, err := smarthome.NewSmarthomeClient()
+	if err != nil {
+		log.Panic().Msg("Cannot connect to mqtt broker")
+	}
+	roomService := smarthome.NewRoomService(smarthomeClient)
+
 	e := echo.New()
-	state := store.New()
-	mqtt.InitMqtt(e.Logger, &state)
-	api.InitRestApi(e, &state)
+	e.Logger = lecho.New(os.Stdout)
+	api.NewRoomController(e, roomService)
+	frontend.RegisterHandlers(e)
+	e.Logger.Fatal(e.Start(":8080"))
 }

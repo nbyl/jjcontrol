@@ -1,8 +1,8 @@
 FROM node:18 as frontend-build
 WORKDIR /usr/src/app
-COPY web/package.json web/yarn.lock ./
+COPY frontend/package.json frontend/yarn.lock ./
 RUN yarn
-COPY web/ ./
+COPY frontend/ ./
 RUN yarn build
 
 FROM golang:1.19 as backend-build
